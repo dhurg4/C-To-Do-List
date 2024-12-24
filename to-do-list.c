@@ -15,7 +15,7 @@ void view_tasks(char*** list, int* size)
     printf("\n");
 }
 
-void add_task(char*** list, int* size) //* is an array of strings, ** is a pointer to the array, *** is a pointer to the pointer
+int add_task(char*** list, int* size) //* is an array of strings, ** is a pointer to the array, *** is a pointer to the pointer
                                     // Allowing us to change the list through dynamic memory allocation.
 {
     (*size)++;
@@ -25,7 +25,7 @@ void add_task(char*** list, int* size) //* is an array of strings, ** is a point
     if (*list == NULL)
     {
         printf("Reallocation failed.\n");  
-        exit(EXIT_FAILURE);    
+        return 1;  
     }
 
     printf("Enter your task here:\n");
@@ -40,13 +40,55 @@ void add_task(char*** list, int* size) //* is an array of strings, ** is a point
 
     view_tasks(list, size);
 
+    return 0;
+
+}
+
+int delete_task(char*** list, int* size)
+{
+    view_tasks(list, size);
+
+    printf("Please enter the number of the task you wish to delete.\n");
+    int index;
+    scanf("%d", &index);
+
+    if ((*size)<=0)
+    {
+        if(index < 0 || index > (*size))
+        {
+            printf("\nInvalid task number.\n");
+            return 1;
+        }
+        printf("\nNo tasks in the list.\n");
+        return 2;
+    }
+    
+
+    printf("\nTask deleted: Task%d: %s\n", index, (*list)[index-1]);
+
+    char** temp_list = (char**)malloc(((*size)-1)*(sizeof(char*)));
+
+    //Move all the elements in the array up one so the task the user wants to delete is gone,
+    //And all the other elements move up the list, filling up the gap.
+    for(int i=(index-1); i<((*size)-1); i++)
+    {
+        (*list)[i] = (*list)[i+1];
+    }
+
+    (*list)[(*size)] = 0 ;
+    ((*size)--);
+
+    view_tasks(list, size);
+
+    return 0;
+
 }
 
 bool starting_screen(bool* exit_p_now, char*** list, int* size) 
 {
     bool exit_p = *exit_p_now;
 
-    printf("2,3,4,5,6,7 don't do anything right now\n 1 - Add a task.\n 8 - Exit the program. \n"); 
+    printf("3,5,6,7 don't do anything right now\n 1 - Add a task.\n 2 - Delete a task. \n 5 - View all tasks. \n 8 - Exit the program. \n"); 
 
     int choice;
     printf("Please enter your choice of task here:\n");
@@ -58,7 +100,7 @@ bool starting_screen(bool* exit_p_now, char*** list, int* size)
             add_task(list, size);
             return exit_p;
         case 2:
-            //delete_task();
+            delete_task(list, size);
             return exit_p;
         case 3:
             //edit_task_name();
@@ -67,7 +109,7 @@ bool starting_screen(bool* exit_p_now, char*** list, int* size)
             //mark_as_done();
             return exit_p;
         case 5:
-            //view_all();
+            view_tasks(list, size);
             return exit_p;
         case 6: 
             //view_pending();
@@ -98,6 +140,11 @@ int main()
         //Passing everything by reference so it gets updated for the whole code
         //instead of just the copy getting updated.
         exit_program = starting_screen(exitP, &tasks, &size);
+    }
+
+    for(int i=0; i<(size); i++)
+    {
+        free((tasks)[i]);
     }
 
     free(tasks);
