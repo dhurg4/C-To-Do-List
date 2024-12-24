@@ -88,7 +88,7 @@ bool starting_screen(bool* exit_p_now, char*** list, int* size)
 {
     bool exit_p = *exit_p_now;
 
-    printf("3,5,6,7 don't do anything right now\n 1 - Add a task.\n 2 - Delete a task. \n 5 - View all tasks. \n 8 - Exit the program. \n"); 
+    printf("\n 1 - Add a task.\n 2 - Delete a task. \n 3 - View all tasks. \n 4 - Exit the program. \n"); 
 
     int choice;
     printf("Please enter your choice of task here:\n");
@@ -103,27 +103,17 @@ bool starting_screen(bool* exit_p_now, char*** list, int* size)
             delete_task(list, size);
             return exit_p;
         case 3:
-            //edit_task_name();
-            return exit_p;
-        case 4:
-            //mark_as_done();
-            return exit_p;
-        case 5:
             view_tasks(list, size);
             return exit_p;
-        case 6: 
-            //view_pending();
-            return exit_p;
-        case 7:
-            //view_done();
-            return exit_p;
-        case 8:
+        case 4:
             printf("Exiting program...\n");
             exit_p = true;
             return exit_p;
+        default:
+            printf("Invalid input");
+            return exit_p;
     }
     return exit_p;
-
 }
 
 int main()
