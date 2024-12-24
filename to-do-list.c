@@ -1,20 +1,55 @@
-#include <stdio.h>
-#include <stdbool.h>
+#include <stdio.h> //input output - printf() scanf()
+#include <stdbool.h> //bool data type
+#include <stdlib.h> //malloc() calloc() realloc() and free()
+#include <string.h> //strlen and strcopy
 
-void add_task(char* list, int* size)
+void view_tasks(char*** list, int* size)
+{
+    int list_length = *size;
+
+    printf("\n");
+    for (int i=0; i<list_length; i++)
+    {
+        printf("Task %d: %s\n", i+1, (*list)[i]);
+    }
+    printf("\n");
+}
+
+void add_task(char*** list, int* size) //* is an array of strings, ** is a pointer to the array, *** is a pointer to the pointer
+                                    // Allowing us to change the list through dynamic memory allocation.
 {
     (*size)++;
 
+    (*list) = realloc((*list), (*size)*sizeof(char*));
+
+    if (*list == NULL)
+    {
+        printf("Reallocation failed.\n");  
+        exit(EXIT_FAILURE);    
+    }
+
+    printf("Enter your task here:\n");
+
+    char temp_task[100]; 
+    scanf("%s", temp_task);
+
+
+    (*list)[(*size) - 1] = (char*)malloc((strlen(temp_task)+1) * sizeof(char));
+
+    strcpy(((*list)[(*size)-1]), temp_task);
+
+    view_tasks(list, size);
+
 }
 
-bool starting_screen(bool* exit_p_now, char* list, int* size) 
+bool starting_screen(bool* exit_p_now, char*** list, int* size) 
 {
     bool exit_p = *exit_p_now;
 
-    printf("1,2,3,4,5,6,7 don't do anything right now \n 8 - Exit the program. \n"); 
+    printf("2,3,4,5,6,7 don't do anything right now\n 1 - Add a task.\n 8 - Exit the program. \n"); 
 
     int choice;
-    printf("Please enter your choice of task here:");
+    printf("Please enter your choice of task here:\n");
     scanf("%d", &choice);
 
     switch(choice)
@@ -55,7 +90,7 @@ int main()
     bool* exitP = &exit_program;
 
     int size = 0;
-    char* tasks = (char*) malloc(size * sizeof(char));
+    char** tasks = NULL;
     
     
     while (exit_program == false)
